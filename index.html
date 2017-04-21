@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Polynomial interpolation GUI with GeoGebra</title>
+		<meta charset="utf-8" />
+		<style>
+			body {
+				font-size: 120%;
+			}
+		</style>
+		<script src="https://www.geogebra.org/scripts/deployggb.js"></script>
+		<script>
+			// Create the Geogebra "applet" (applet is not meant in the usual sense of a Java applet!)
+			let ggbAppletParameters = {
+				"prerelease": false,
+				"width": 1000,
+				"height": 500,
+				"showToolBar": true,
+				"borderColor": null,
+				"showMenuBar": false,
+				"showAlgebraInput": false,
+				"showResetIcon": true,
+				"enableLabelDrags": false,
+				"enableShiftDragZoom": true,
+				"enableRightClick": false,
+				"capturingThreshold": null,
+				"showToolBarHelp": false,
+				"errorDialogsActive": true,
+				"useBrowserForJS": false,
+			};
+
+			let globalApplet = new GGBApplet('5.0', ggbAppletParameters);
+
+			window.addEventListener("DOMContentLoaded", function () {
+				globalApplet.inject("applet_container");
+			});
+		</script>
+
+		<script>
+			/**
+			 * Reads all points from a GGB applet and returns an array of points (e.g. [ {x: 1, y: 2}, {x: 3.14, y: -2.7} ]).
+			 */
+			function readPoints(ggbApplet) {
+				// Creates an array containing 0 up to n (exclusive)
+				let range = n => Array(n).fill(42).map((_, idx) => idx);
+
+				return range(ggbApplet.getObjectNumber())
+					.map((_, idx) => ggbApplet.getObjectName(idx))
+					.filter(name => ggbApplet.getObjectType(name) == "point")
+					.map(name => ggbApplet.getValueString(name))
+					.map(valueString => {
+						// valueString might be "P = (3.44, -4.68)"
+						let [_, x, y] = valueString.match(/\((-?[\d.]+), (-?[\d.]+)\)/);
+						return {x: parseFloat(x), y: parseFloat(y)};
+					});
+			}
+
+			/**
+			 * Creates a Lagrange interpolation polynomial from a given set of points.
+			 * @param points An array of objects of the form {x: 123, y: 256}.
+			 * @return The polynomial formula as a string suitable as input for probably the most CAS.
+			 */
+			function createPolynomial(points) {
+				// See https://en.wikipedia.org/wiki/Lagrange_polynomial for the formula
+				let lagrangeBasisFunctions = [];
+				for (let xi of points) {
+					lagrangeBasisFunctions.push(points.filter(xj => xj != xi).map(xj =>
+						`(x - ${xj.x})/(${xi.x} - ${xj.x})`
+					).join(" * "));
+				}
+
+				return points.map((p, idx) => `${p.y} * ${lagrangeBasisFunctions[idx]}`).join("+");
+			}
+
+
+			window.addEventListener("DOMContentLoaded", function () {
+				let $interpolateButton = document.getElementById("interpolate");
+				let $formulaOutput = document.getElementById("formulaOutput");
+				let $wolframLink = document.getElementById("wolframLink");
+
+				$interpolateButton.addEventListener("click", () => {
+					let ggbApplet = document.ggbApplet;
+					if (!ggbApplet) {
+						throw "document.ggbApplet not populated, have the GGB scripts not been properly loaded and initialized?"
+					}
+
+					let points = readPoints(ggbApplet);
+					if (points.length <= 1) {
+						alert("Please add more than one point.");
+						return;
+					}
+					let polynomial = createPolynomial(readPoints(ggbApplet));
+					let interpolationFunction = `f(x)=${polynomial}`;
+
+					ggbApplet.evalCommand(interpolationFunction);
+					$formulaOutput.value = interpolationFunction;
+					$wolframLink.href = `https://www.wolframalpha.com/input/?i=${encodeURIComponent("simplify " + interpolationFunction)}`
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<!-- Fork me on GitHub -->
+		<a href="https://github.com/ComFreek/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+
+		<h1>Online Polynomial Interpolation GUI with GeoGebra</h1>
+		You can add points via the menu, then click <kbd>Interpolate</kbd> to show the interpolation polynomial function.
+		<div id="applet_container"></div>
+		<button id="interpolate">Interpolate!</button><br>
+		<p>
+			<textarea cols="100" rows="3" id="formulaOutput" readonly="readonly" placeholder="The interpolation function will appear here."></textarea>
+		</p>
+		<p>
+			Link to WolframAlpha evaluating and simplifying the expression: <a href="#" id="wolframLink" rel="nofollow" target="_blank">Link</a>
+			<br>
+			(Link opens in new tab; WolframAlpha sometimes pretends to recognize a "SyntaxError" if the input is just too long.)
+		</p>
+
+		<h2>References</h2>
+		<ul>
+			<li><a href="https://wiki.geogebra.org/en/Reference:JavaScript">Official GeoGebra Applet scripting reference</a></li>
+			<li><a href="https://en.wikipedia.org/wiki/Lagrange_polynomial">Lagrange interpolation polynomial</a>
+		</ul>
+
+		<h2>Author</h2>
+		ComFreek, you can find me on <a href="https://github.com/ComFreek"><img src="GitHub-Mark-120px-plus.png" alt="GitHub logo" style="height: 1.5em; vertical-align:middle" /> github.com/ComFreek</a>
+	</body>
+</html>
