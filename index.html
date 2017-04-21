@@ -7,6 +7,10 @@
 			body {
 				font-size: 120%;
 			}
+			button#interpolate {
+				font-size: 130%;
+				margin: 1em 0;
+			}
 		</style>
 		<script src="https://www.geogebra.org/scripts/deployggb.js"></script>
 		<script>
@@ -37,16 +41,20 @@
 		</script>
 
 		<script>
-			/**
-			 * Reads all points from a GGB applet and returns an array of points (e.g. [ {x: 1, y: 2}, {x: 3.14, y: -2.7} ]).
-			 */
-			function readPoints(ggbApplet) {
+			function getPointNames(ggbApplet) {
 				// Creates an array containing 0 up to n (exclusive)
 				let range = n => Array(n).fill(42).map((_, idx) => idx);
 
 				return range(ggbApplet.getObjectNumber())
 					.map((_, idx) => ggbApplet.getObjectName(idx))
 					.filter(name => ggbApplet.getObjectType(name) == "point")
+			}
+
+			/**
+			 * Reads all points from a GGB applet and returns an array of points (e.g. [ {x: 1, y: 2}, {x: 3.14, y: -2.7} ]).
+			 */
+			function readPoints(ggbApplet) {
+				return getPointNames(ggbApplet)
 					.map(name => ggbApplet.getValueString(name))
 					.map(valueString => {
 						// valueString might be "P = (3.44, -4.68)"
@@ -72,18 +80,19 @@
 				return points.map((p, idx) => `${p.y} * ${lagrangeBasisFunctions[idx]}`).join("+");
 			}
 
-
 			window.addEventListener("DOMContentLoaded", function () {
 				let $interpolateButton = document.getElementById("interpolate");
 				let $formulaOutput = document.getElementById("formulaOutput");
 				let $wolframLink = document.getElementById("wolframLink");
 
-				$interpolateButton.addEventListener("click", () => {
-					let ggbApplet = document.ggbApplet;
-					if (!ggbApplet) {
-						throw "document.ggbApplet not populated, have the GGB scripts not been properly loaded and initialized?"
-					}
+				let $loadButton = document.getElementById("load");
+				let $saveButton = document.getElementById("save");
+				let $dataSwapArea = document.getElementById("dataSwapArea");
 
+				/**
+			  	  * Interpolates the points from ggbApplet and shows them in the UI.
+			  	  */
+				function interpolate(ggbApplet) {
 					let points = readPoints(ggbApplet);
 					if (points.length <= 1) {
 						alert("Please add more than one point.");
@@ -95,6 +104,34 @@
 					ggbApplet.evalCommand(interpolationFunction);
 					$formulaOutput.value = interpolationFunction;
 					$wolframLink.href = `https://www.wolframalpha.com/input/?i=${encodeURIComponent("simplify " + interpolationFunction)}`
+				}
+
+				$interpolateButton.addEventListener("click", () => {
+					interpolate(document.ggbApplet);
+				});
+
+				$saveButton.addEventListener("click", () => {
+					let points = readPoints(document.ggbApplet);
+					$dataSwapArea.value = JSON.stringify(points, null, "\t");
+				});
+
+				$loadButton.addEventListener("click", () => {
+					let ggbApplet = document.ggbApplet;
+					try {
+						let points = JSON.parse($dataSwapArea.value);
+						// Delete all current points
+						getPointNames(ggbApplet).forEach(pointName => ggbApplet.deleteObject(pointName));
+
+						// Insert loaded points
+						points.forEach(point => ggbApplet.evalCommand(`(${point.x}, ${point.y})`));
+
+						// Show the interpolation
+						interpolate(ggbApplet);
+					}
+					catch(err) {
+						alert("Error while loading points: " + err);
+						throw err;
+					}
 				});
 			});
 		</script>
@@ -107,15 +144,23 @@
 		<h1>Polynomial Interpolation Web GUI with GeoGebra</h1>
 		You can add points via the menu, then click <kbd>Interpolate</kbd> to show the interpolation polynomial function.
 		<div id="applet_container"></div>
-		<button id="interpolate">Interpolate!</button><br>
-		<p>
+		<button id="interpolate">Interpolate</button><br>
+		<fieldset>
+			<legend>Formula</legend>
 			<textarea cols="100" rows="3" id="formulaOutput" readonly="readonly" placeholder="The interpolation function will appear here."></textarea>
-		</p>
-		<p>
+
+			<br>
 			Link to WolframAlpha evaluating and simplifying the expression: <a href="#" id="wolframLink" rel="nofollow" target="_blank">Link</a>
 			<br>
 			(Link opens in new tab; WolframAlpha sometimes pretends to recognize a "SyntaxError" if the input is just too long.)
-		</p>
+		</fieldset>
+		<fieldset>
+			<legend>Load &amp; Save</legend>
+			<textarea id="dataSwapArea" cols="50" rows="10" placeholder="Paste your data to load from" style="float: left"></textarea>
+			<br>
+			<button id="load">Load points from JSON</button>
+			<button id="save">Save points to JSON</button>
+		</fieldset>
 
 		<h2>Browser support</h2>
 		Every up-to-date browser. As the JavaScript uses arrow functions and some ES 6 syntax, IE 11 is sadly not supported, Microsoft Edge is, however.
