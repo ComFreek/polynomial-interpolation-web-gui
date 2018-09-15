@@ -41,12 +41,16 @@
 		</script>
 
 		<script>
-			function getPointNames(ggbApplet) {
+			function getGeogebraAppletNames(ggbApplet) {
 				// Creates an array containing 0 up to n (exclusive)
-				let range = n => Array(n).fill(42).map((_, idx) => idx);
+				const range = n => Array(n).fill(42).map((_, idx) => idx);
 
 				return range(ggbApplet.getObjectNumber())
-					.map((_, idx) => ggbApplet.getObjectName(idx))
+					.map((_, idx) => ggbApplet.getObjectName(idx));
+			}
+
+			function getPointNames(ggbApplet) {
+				return getGeogebraAppletNames(ggbApplet)
 					.filter(name => ggbApplet.getObjectType(name) == "point")
 			}
 
@@ -63,21 +67,34 @@
 					});
 			}
 
-			/**
-			 * Creates a Lagrange interpolation polynomial from a given set of points.
-			 * @param points An array of objects of the form {x: 123, y: 256}.
-			 * @return The polynomial formula as a string suitable as input for probably the most CAS.
-			 */
-			function createPolynomial(points) {
-				// See https://en.wikipedia.org/wiki/Lagrange_polynomial for the formula
-				let lagrangeBasisFunctions = [];
-				for (let xi of points) {
-					lagrangeBasisFunctions.push(points.filter(xj => xj != xi).map(xj =>
-						`(x - ${xj.x})/(${xi.x} - ${xj.x})`
-					).join(" * "));
+			function getFunctionFormula(ggbApplet, functionName) {
+				const matchingFunctions = getGeogebraAppletNames(ggbApplet)
+					.filter(name => name === functionName && ggbApplet.getObjectType(name) === "function")
+
+				if (matchingFunctions.length === 0) {
+					throw new Error(`No function found with name '${functionName}'.`);
+				}
+				if (matchingFunctions.length > 1) {
+					throw new Error(`More than one function found with name '${functionName}'.`);
 				}
 
-				return points.map((p, idx) => `${p.y} * ${lagrangeBasisFunctions[idx]}`).join("+");
+				return ggbApplet.getValueString(matchingFunctions[0]);
+			}
+
+			/**
+			 * Build the GeoGebra command for interpolating a polynomial from given points.
+			 * The command looks like "f(x) = Polynomial({(0, 0), (1, 2)})" for points (0, 0) and (1, 2).
+			 *
+			 * @param points An array of {x: number, y: number} POD point objects
+			 * @param functionName The function name, i.e. the part in front of "(x)"" in "f(x) = ..." (here: "f")
+			 * @return A GeoGebra command of the form "f(x) = Polynomial({(0, 0), (1, 2), ...})"
+			 *         with the given points.
+			 */
+			function createPolynomialCommand(points, functionName = 'f') {
+				// e.g. Polynomial({(1, 1), (2, 3), (3, 6)}
+				const polynomialCommand = `${functionName}(x) = Polynomial({` + points.map(p => `(${p.x}, ${p.y})`).join(',') + `})`;
+
+				return polynomialCommand;
 			}
 
 			window.addEventListener("DOMContentLoaded", function () {
@@ -98,12 +115,11 @@
 						alert("Please add more than one point.");
 						return;
 					}
-					let polynomial = createPolynomial(readPoints(ggbApplet));
-					let interpolationFunction = `f(x)=${polynomial}`;
+					ggbApplet.evalCommand(createPolynomialCommand(readPoints(ggbApplet), 'f'));
 
-					ggbApplet.evalCommand(interpolationFunction);
-					$formulaOutput.value = interpolationFunction;
-					$wolframLink.href = `https://www.wolframalpha.com/input/?i=${encodeURIComponent("simplify " + interpolationFunction)}`
+					const functionFormula = getFunctionFormula(ggbApplet, 'f');
+					$formulaOutput.value = functionFormula;
+					$wolframLink.href = `https://www.wolframalpha.com/input/?i=${encodeURIComponent(functionFormula)}`;
 				}
 
 				$interpolateButton.addEventListener("click", () => {
@@ -150,7 +166,7 @@
 			<textarea cols="100" rows="3" id="formulaOutput" readonly="readonly" placeholder="The interpolation function will appear here."></textarea>
 
 			<br>
-			Link to WolframAlpha evaluating and simplifying the expression: <a href="#" id="wolframLink" rel="nofollow" target="_blank">Link</a>
+			Link to WolframAlpha showing more details on the polynomial: <a href="#" id="wolframLink" rel="nofollow" target="_blank">Link</a>
 			<br>
 			(Link opens in new tab; WolframAlpha sometimes pretends to recognize a "SyntaxError" if the input is just too long.)
 		</fieldset>
@@ -168,7 +184,7 @@
 		<h2>References</h2>
 		<ul>
 			<li><a href="https://wiki.geogebra.org/en/Reference:JavaScript">Official GeoGebra Applet scripting reference</a></li>
-			<li><a href="https://en.wikipedia.org/wiki/Lagrange_polynomial">Lagrange interpolation polynomial</a>
+			<li><a href="https://en.wikipedia.org/wiki/Polynomial_interpolation">Polynomial interpolation polynomial</a>
 		</ul>
 
 		<h2>Author</h2>
