@@ -4,153 +4,10 @@
 		<meta charset="utf-8" />
 		<meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
 		<title>Polynomial Interpolation Web GUI with GeoGebra</title>
-		<style>
-			body {
-				font-size: 120%;
-			}
-			button#interpolate {
-				font-size: 130%;
-				margin: 1em 0;
-			}
-		</style>
-		<script src="https://www.geogebra.org/scripts/deployggb.js"></script>
-		<script>
-			// Create the Geogebra "applet" (applet is not meant in the usual sense of a Java applet!)
-			let ggbAppletParameters = {
-				'prerelease': false,
-				'width': 1000,
-				'height': 500,
-				'showToolBar': true,
-				'borderColor': null,
-				'showMenuBar': false,
-				'showAlgebraInput': false,
-				'showResetIcon': true,
-				'enableLabelDrags': false,
-				'enableShiftDragZoom': true,
-				'enableRightClick': false,
-				'capturingThreshold': null,
-				'showToolBarHelp': false,
-				'errorDialogsActive': true,
-				'useBrowserForJS': false,
-			};
+		<link rel='stylesheet' href='style.css' />
 
-			let globalApplet = new GGBApplet('5.0', ggbAppletParameters);
-
-			window.addEventListener('DOMContentLoaded', () => {
-				globalApplet.inject('applet_container');
-			});
-		</script>
-
-		<script>
-			function getGeogebraAppletNames(ggbApplet) {
-				// Creates an array containing 0 up to n (exclusive)
-				const range = n => Array(n).fill(42).map((_, idx) => idx);
-
-				return range(ggbApplet.getObjectNumber())
-					.map((_, idx) => ggbApplet.getObjectName(idx));
-			}
-
-			function getPointNames(ggbApplet) {
-				return getGeogebraAppletNames(ggbApplet)
-					.filter(name => ggbApplet.getObjectType(name) === 'point')
-			}
-
-			/**
-			 * Reads all points from a GGB applet and returns an array of points (e.g. [ {x: 1, y: 2}, {x: 3.14, y: -2.7} ]).
-			 */
-			function readPoints(ggbApplet) {
-				return getPointNames(ggbApplet)
-					.map(name => ggbApplet.getValueString(name))
-					.map(valueString => {
-						// valueString might be 'P = (3.44, -4.68)'
-						let [_, x, y] = valueString.match(/\((-?[\d.]+), (-?[\d.]+)\)/);
-						return {x: parseFloat(x), y: parseFloat(y)};
-					});
-			}
-
-			function getFunctionFormula(ggbApplet, functionName) {
-				const matchingFunctions = getGeogebraAppletNames(ggbApplet)
-					.filter(name => name === functionName && ggbApplet.getObjectType(name) === 'function')
-
-				if (matchingFunctions.length === 0) {
-					throw new Error(`No function found with name '${functionName}'.`);
-				}
-				if (matchingFunctions.length > 1) {
-					throw new Error(`More than one function found with name '${functionName}'.`);
-				}
-
-				return ggbApplet.getValueString(matchingFunctions[0]);
-			}
-
-			/**
-			 * Build the GeoGebra command for interpolating a polynomial from given points.
-			 * The command looks like "f(x) = Polynomial({(0, 0), (1, 2)})" for points (0, 0) and (1, 2).
-			 *
-			 * @param points An array of {x: number, y: number} POD point objects
-			 * @param functionName The function name, i.e. the part in front of "(x)" in "f(x) = ..." (here: "f")
-			 * @return A GeoGebra command of the form "f(x) = Polynomial({(0, 0), (1, 2), ...})"
-			 *         with the given points.
-			 */
-			function createPolynomialCommand(points, functionName = 'f') {
-				// e.g. Polynomial({(1, 1), (2, 3), (3, 6)}
-				const polynomialCommand = `${functionName}(x) = Polynomial({` + points.map(p => `(${p.x}, ${p.y})`).join(',') + `})`;
-
-				return polynomialCommand;
-			}
-
-			window.addEventListener('DOMContentLoaded',() => {
-				let $interpolateButton = document.getElementById('interpolate');
-				let $formulaOutput = document.getElementById('formulaOutput');
-				let $wolframLink = document.getElementById('wolframLink');
-
-				let $loadButton = document.getElementById('load');
-				let $saveButton = document.getElementById('save');
-				let $dataSwapArea = document.getElementById('dataSwapArea');
-
-				/**
-			  	  * Interpolates the points from ggbApplet and shows them in the UI.
-			  	  */
-				function interpolate(ggbApplet) {
-					let points = readPoints(ggbApplet);
-					if (points.length <= 1) {
-						alert('Please add more than one point.');
-						return;
-					}
-					ggbApplet.evalCommand(createPolynomialCommand(readPoints(ggbApplet), 'f'));
-
-					const functionFormula = getFunctionFormula(ggbApplet, 'f');
-					$formulaOutput.value = functionFormula;
-					$wolframLink.href = `https://www.wolframalpha.com/input/?i=${encodeURIComponent(functionFormula)}`;
-				}
-
-				$interpolateButton.addEventListener('click', () => {
-					interpolate(document.ggbApplet);
-				});
-
-				$saveButton.addEventListener('click', () => {
-					let points = readPoints(document.ggbApplet);
-					$dataSwapArea.value = JSON.stringify(points, null, '\t');
-				});
-
-				$loadButton.addEventListener('click', () => {
-					let ggbApplet = document.ggbApplet;
-					try {
-						let points = JSON.parse($dataSwapArea.value);
-						// Delete all current points
-						getPointNames(ggbApplet).forEach(pointName => ggbApplet.deleteObject(pointName));
-
-						// Insert loaded points
-						points.forEach(point => ggbApplet.evalCommand(`(${point.x}, ${point.y})`));
-
-						// Show the interpolation
-						interpolate(ggbApplet);
-					}
-					catch(err) {
-						alert(`Error while loading points: ${err}.`);
-						throw err;
-					}
-				});
-			});
+		<script nomodule>
+			alert('Your browser is unsupported, namely it does not support ES modules.');
 		</script>
 	</head>
 
@@ -190,5 +47,8 @@
 
 		<h2>Author</h2>
 		ComFreek, you can find me on <a href="https://github.com/ComFreek"><img src="GitHub-Mark-120px-plus.png" alt="GitHub logo" style="height: 1.5em; vertical-align:middle" /> github.com/ComFreek</a>
+
+		<script src="https://www.geogebra.org/scripts/deployggb.js"></script>
+		<script src='gui.js' type='module'></script>
 	</body>
 </html>
