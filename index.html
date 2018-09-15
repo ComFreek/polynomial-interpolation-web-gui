@@ -16,27 +16,27 @@
 		<script>
 			// Create the Geogebra "applet" (applet is not meant in the usual sense of a Java applet!)
 			let ggbAppletParameters = {
-				"prerelease": false,
-				"width": 1000,
-				"height": 500,
-				"showToolBar": true,
-				"borderColor": null,
-				"showMenuBar": false,
-				"showAlgebraInput": false,
-				"showResetIcon": true,
-				"enableLabelDrags": false,
-				"enableShiftDragZoom": true,
-				"enableRightClick": false,
-				"capturingThreshold": null,
-				"showToolBarHelp": false,
-				"errorDialogsActive": true,
-				"useBrowserForJS": false,
+				'prerelease': false,
+				'width': 1000,
+				'height': 500,
+				'showToolBar': true,
+				'borderColor': null,
+				'showMenuBar': false,
+				'showAlgebraInput': false,
+				'showResetIcon': true,
+				'enableLabelDrags': false,
+				'enableShiftDragZoom': true,
+				'enableRightClick': false,
+				'capturingThreshold': null,
+				'showToolBarHelp': false,
+				'errorDialogsActive': true,
+				'useBrowserForJS': false,
 			};
 
 			let globalApplet = new GGBApplet('5.0', ggbAppletParameters);
 
-			window.addEventListener("DOMContentLoaded", function () {
-				globalApplet.inject("applet_container");
+			window.addEventListener('DOMContentLoaded', () => {
+				globalApplet.inject('applet_container');
 			});
 		</script>
 
@@ -51,7 +51,7 @@
 
 			function getPointNames(ggbApplet) {
 				return getGeogebraAppletNames(ggbApplet)
-					.filter(name => ggbApplet.getObjectType(name) == "point")
+					.filter(name => ggbApplet.getObjectType(name) === 'point')
 			}
 
 			/**
@@ -61,7 +61,7 @@
 				return getPointNames(ggbApplet)
 					.map(name => ggbApplet.getValueString(name))
 					.map(valueString => {
-						// valueString might be "P = (3.44, -4.68)"
+						// valueString might be 'P = (3.44, -4.68)'
 						let [_, x, y] = valueString.match(/\((-?[\d.]+), (-?[\d.]+)\)/);
 						return {x: parseFloat(x), y: parseFloat(y)};
 					});
@@ -69,7 +69,7 @@
 
 			function getFunctionFormula(ggbApplet, functionName) {
 				const matchingFunctions = getGeogebraAppletNames(ggbApplet)
-					.filter(name => name === functionName && ggbApplet.getObjectType(name) === "function")
+					.filter(name => name === functionName && ggbApplet.getObjectType(name) === 'function')
 
 				if (matchingFunctions.length === 0) {
 					throw new Error(`No function found with name '${functionName}'.`);
@@ -86,7 +86,7 @@
 			 * The command looks like "f(x) = Polynomial({(0, 0), (1, 2)})" for points (0, 0) and (1, 2).
 			 *
 			 * @param points An array of {x: number, y: number} POD point objects
-			 * @param functionName The function name, i.e. the part in front of "(x)"" in "f(x) = ..." (here: "f")
+			 * @param functionName The function name, i.e. the part in front of "(x)" in "f(x) = ..." (here: "f")
 			 * @return A GeoGebra command of the form "f(x) = Polynomial({(0, 0), (1, 2), ...})"
 			 *         with the given points.
 			 */
@@ -97,14 +97,14 @@
 				return polynomialCommand;
 			}
 
-			window.addEventListener("DOMContentLoaded", function () {
-				let $interpolateButton = document.getElementById("interpolate");
-				let $formulaOutput = document.getElementById("formulaOutput");
-				let $wolframLink = document.getElementById("wolframLink");
+			window.addEventListener('DOMContentLoaded',() => {
+				let $interpolateButton = document.getElementById('interpolate');
+				let $formulaOutput = document.getElementById('formulaOutput');
+				let $wolframLink = document.getElementById('wolframLink');
 
-				let $loadButton = document.getElementById("load");
-				let $saveButton = document.getElementById("save");
-				let $dataSwapArea = document.getElementById("dataSwapArea");
+				let $loadButton = document.getElementById('load');
+				let $saveButton = document.getElementById('save');
+				let $dataSwapArea = document.getElementById('dataSwapArea');
 
 				/**
 			  	  * Interpolates the points from ggbApplet and shows them in the UI.
@@ -112,7 +112,7 @@
 				function interpolate(ggbApplet) {
 					let points = readPoints(ggbApplet);
 					if (points.length <= 1) {
-						alert("Please add more than one point.");
+						alert('Please add more than one point.');
 						return;
 					}
 					ggbApplet.evalCommand(createPolynomialCommand(readPoints(ggbApplet), 'f'));
@@ -122,16 +122,16 @@
 					$wolframLink.href = `https://www.wolframalpha.com/input/?i=${encodeURIComponent(functionFormula)}`;
 				}
 
-				$interpolateButton.addEventListener("click", () => {
+				$interpolateButton.addEventListener('click', () => {
 					interpolate(document.ggbApplet);
 				});
 
-				$saveButton.addEventListener("click", () => {
+				$saveButton.addEventListener('click', () => {
 					let points = readPoints(document.ggbApplet);
-					$dataSwapArea.value = JSON.stringify(points, null, "\t");
+					$dataSwapArea.value = JSON.stringify(points, null, '\t');
 				});
 
-				$loadButton.addEventListener("click", () => {
+				$loadButton.addEventListener('click', () => {
 					let ggbApplet = document.ggbApplet;
 					try {
 						let points = JSON.parse($dataSwapArea.value);
@@ -145,7 +145,7 @@
 						interpolate(ggbApplet);
 					}
 					catch(err) {
-						alert("Error while loading points: " + err);
+						alert(`Error while loading points: ${err}.`);
 						throw err;
 					}
 				});
