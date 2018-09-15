@@ -25,6 +25,23 @@ function interpolate() {
 		alert('Please add more than one point.');
 		return;
 	}
+
+	function hasConflictingPoints(points) {
+		return points.some((point1, index1) => {
+			return points.some((point2, index2) => {
+				return (index1 !== index2) && (point1.x === point2.x);
+			});
+		});
+	}
+
+	if (hasConflictingPoints(points)) {
+		alert(`Two or more points are under each other (i.e. have the same x component).\
+ Interpolation is impossible in these cases as functions (as considered here) cannot\
+ be multi-valued.\n
+ Delete the offending points in the GeoGebra GUI by right-clicking them in the left sidebar.`);
+		return;
+	}
+
 	ggbApplet.applet.evalCommand(createPolynomialCommand(points, INTERPOLATION_FUNCTION_NAME));
 
 	const functionFormula = ggbApplet.readFunctionFormula(INTERPOLATION_FUNCTION_NAME);
