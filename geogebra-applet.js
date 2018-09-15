@@ -8,7 +8,7 @@ export class GeogebraApplet {
 	 * You have to call injectInto() to make the applet actually visible and usable.
 	 */
 	constructor() {
-		if (GeogebraApplet.geogebraAppletInstance !== null) {
+		if (GeogebraApplet.geogebraAppletInstance !== undefined) {
 			throw new Error(`You can only instantiate GeogebraApplet once for now.\
  This is a limitation of the underlying GeoGebra library which "occupies" document.ggbApplet
  document-wide for every created applet.`);
