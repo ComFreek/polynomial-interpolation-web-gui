@@ -8,8 +8,11 @@ export class GeogebraApplet {
 	 * Create a new instance and initialize the applet with default parameters.
 	 *
 	 * You have to call injectInto() to make the applet actually visible and usable.
+	 *
+	 * @param geogebraAppsVersion The GeoGebra Apps version to use, leave undefined
+	 *                            to use the latest one.
 	 */
-	constructor() {
+	constructor(geogebraAppsVersion = undefined) {
 		if (GeogebraApplet.geogebraAppletInstance !== undefined) {
 			throw new Error(`You can only instantiate GeogebraApplet once for now.\
  This is a limitation of the underlying GeoGebra library which "occupies" document.ggbApplet
@@ -17,8 +20,10 @@ export class GeogebraApplet {
 		}
 		GeogebraApplet.geogebraAppletInstance = this;
 
-		this.appletHandle = new GGBApplet('5.0', {
-			'prerelease': false,
+		this.geogebraAppsVersion = geogebraAppsVersion;
+		this.appletHandle = new GGBApplet({
+			'appName': 'classic',
+			// 'prerelease': false,
 			'width': 1000,
 			'height': 500,
 			'showToolBar': true,
@@ -41,6 +46,13 @@ export class GeogebraApplet {
 	 * @param {string} domID
 	 */
 	injectInto(domID) {
+		if (this.geogebraAppsVersion === undefined) {
+			// Use latest version
+			// Nothing to do as this is the default
+		}
+		else {
+			this.appletHandle.setHTML5Codebase(`https://cdn.geogebra.org/apps/${this.geogebraAppsVersion}/web3d`);
+		}
 		this.appletHandle.inject(domID);
 	}
 

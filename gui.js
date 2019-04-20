@@ -1,8 +1,12 @@
+/* global GEOGEBRA_APPS_VERSION_TO_USE */
+// That global variable is included via a <script> tag in index.html
+// referencing ./geogebra-apps-version.js.
+
 import { GeogebraApplet } from './geogebra-applet.js';
 import { createPolynomialCommand } from './geogebra-helpers.js';
 
 
-const ggbApplet = new GeogebraApplet();
+const ggbApplet = new GeogebraApplet(GEOGEBRA_APPS_VERSION_TO_USE);
 const $formulaOutput = document.getElementById('formulaOutput');
 const $wolframLink = document.getElementById('wolframLink');
 const GEOGEBRA_APPLET_CONTAINER_ID = 'applet_container';
