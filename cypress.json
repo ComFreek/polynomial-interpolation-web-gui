@@ -1,9 +1,0 @@
-{
-	"fileServerFolder": "src",
-	"integrationFolder": "test/cypress/integration",
-	"fixturesFolder": false,
-	"pluginsFile": false,
-	"screenshotsFolder": "test/cypress/screenshots",
-	"videosFolder": "test/cypress/videos",
-	"supportFile": false
-}
