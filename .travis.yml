@@ -23,16 +23,16 @@ addons:
 
 jobs:
   include:
-    # we have multiple jobs to execute using just a single stage
-    # but we can pass group name via environment variable to Cypress test runner
     - stage: lint
       name: "JavaScript linting"
       script: npm run lint
+
     - stage: test
       name: "Integration Tests"
       script:
         - npm start -- --silent &
+        # We have to use Chrome due to
+        # https://github.com/ComFreek/polynomial-interpolation-web-gui/issues/2
         - npm run cy:run -- --browser chrome
-        # after all tests finish running we need
-        # to kill all background jobs (like "npm start &")
+        # after all tests finish running we need to kill all background jobs (like "npm start &")
         - kill $(jobs -p) || true
