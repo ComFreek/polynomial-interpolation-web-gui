@@ -10,7 +10,7 @@
  * build if we are not using the latest version anymore!
  */
 
-const usedGeoGebraAppsVersion = require('./geogebra-apps-version');
+const usedGeoGebraAppsVersion = require('./src/js/geogebra-apps-version');
 const request = require('request-promise-native');
 const compareVersions = require('compare-versions');
 
