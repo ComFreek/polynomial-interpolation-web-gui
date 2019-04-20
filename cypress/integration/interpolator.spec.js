@@ -2,6 +2,10 @@
 
 describe('Polynomial Interpolation Web GUI with GeoGebra', function() {
 
+	function visitInterpolator() {
+		cy.visit('index.html');
+	}
+
 	function expectAlert(message) {
 		const stub = cy.stub()
 		cy.on ('window:alert', stub)
@@ -34,26 +38,24 @@ describe('Polynomial Interpolation Web GUI with GeoGebra', function() {
 	}
 
 	it('Page loads', () => {
-		cy.visit('index.html');
+		visitInterpolator();
 	});
 
 	it('Can add single point', () => {
-		cy.visit('index.html');
-
+		visitInterpolator();
 		selectPointTool();
 		insertPoint(150, 150);
 	});
 
 	it('Error when interpolating without any points', () => {
-		cy.visit('index.html');
+		visitInterpolator();
 
 		const expectedAlert = expectAlert(/more than one point/);
 		cy.get('button#interpolate').click().then(() => expectedAlert.now());
 	});
 
 	it('Error when interpolating with a single point', () => {
-		cy.visit('index.html');
-
+		visitInterpolator();
 		selectPointTool();
 		insertPoint(150, 150);
 

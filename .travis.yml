@@ -18,6 +18,9 @@ cache:
     - npm ci
     - npm run cy:verify
 
+addons:
+  chrome: stable
+
 jobs:
   include:
     # we have multiple jobs to execute using just a single stage
@@ -29,7 +32,7 @@ jobs:
       name: "Integration Tests"
       script:
         - npm start -- --silent &
-        - npm run cy:run
+        - npm run cy:run -- --browser chrome
         # after all tests finish running we need
         # to kill all background jobs (like "npm start &")
         - kill $(jobs -p) || true
