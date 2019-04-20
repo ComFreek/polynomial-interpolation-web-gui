@@ -5,8 +5,6 @@ branches:
 
 language: node_js
 node_js:
-  # Node 10.3+ includes npm@6 which has good "npm ci" command
-  - 10.8
   - node
 os:
   - linux
@@ -20,39 +18,18 @@ cache:
     - npm ci
     - npm run cy:verify
 
-script:
-  - npm run lint
-
-defaults: &defaults
-  script:
-    - npm start -- --silent &
-    - npm run cy:run -- --parallel --group $STAGE_NAME
-    # after all tests finish running we need
-    # to kill all background jobs (like "npm start &")
-    - kill $(jobs -p) || true
-
 jobs:
   include:
     # we have multiple jobs to execute using just a single stage
     # but we can pass group name via environment variable to Cypress test runner
+    - stage: lint
+      name: "JavaScript linting"
+      script: npm run lint
     - stage: test
-      env:
-        - STAGE_NAME=1x-electron
-      <<: *defaults
-    # run tests in parallel by including several test jobs with same name variable
-    - stage: test
-      env:
-        - STAGE_NAME=4x-electron
-      <<: *defaults
-    - stage: test
-      env:
-        - STAGE_NAME=4x-electron
-      <<: *defaults
-    - stage: test
-      env:
-        - STAGE_NAME=4x-electron
-      <<: *defaults
-    - stage: test
-      env:
-        - STAGE_NAME=4x-electron
-      <<: *defaults
+      name: "Integration Tests"
+      script:
+        - npm start -- --silent &
+        - npm run cy:run
+        # after all tests finish running we need
+        # to kill all background jobs (like "npm start &")
+        - kill $(jobs -p) || true
