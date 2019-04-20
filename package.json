@@ -15,14 +15,12 @@
   },
   "scripts": {
     "start": "http-server src -c-1",
-    "start:ci": "http-server src -c-1 --silent",
-    "dev": "npm start -- -o",
-    "test": "npm start & cypress run",
-    "lint": "eslint src/**/*.js cypress/**/*.js",
-    "e2e": "cypress run",
+    "test": "npm run cy:run",
+    "lint": "eslint src/**/*.js test/**/*.js",
+    "e2e": "npm run cy:run",
     "cy:verify": "cypress verify",
     "cy:version": "cypress version",
-    "cy:run": "cypress run",
+    "cy:run": "cypress run --browser chrome",
     "cy:open": "cypress open"
   },
   "repository": {

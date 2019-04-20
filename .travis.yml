@@ -24,11 +24,7 @@ addons:
 script:
   - node ./check-geogebra-apps-version.js || travis_terminate 1
   - npm run lint || travis_terminate 1
-  - npm start -- --silent || travis_terminate 1 &
-  # We have to use Chrome due to
-  # https://github.com/ComFreek/polynomial-interpolation-web-gui/issues/2
-  - npm run cy:run -- --browser chrome
-  # after all tests finish running we need to kill all background jobs (like "npm start &")
+  - npm test
   - kill $(jobs -p) || true
 
 deploy:
