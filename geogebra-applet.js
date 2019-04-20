@@ -1,3 +1,5 @@
+/* global GGBApplet */
+
 /**
  * Wrapper of a [GeoGebra HTML5 applet](https://wiki.geogebra.org/en/Reference:JavaScript).
  */
@@ -80,7 +82,7 @@ export class GeogebraApplet {
 			.map(name => this.applet.getValueString(name))
 			.map(valueString => {
 				// valueString might be 'P = (3.44, -4.68)'
-				let [_, x, y] = valueString.match(/\((-?[\d.]+), (-?[\d.]+)\)/);
+				let [, x, y] = valueString.match(/\((-?[\d.]+), (-?[\d.]+)\)/);
 				return { x: parseFloat(x), y: parseFloat(y) };
 			});
 	}

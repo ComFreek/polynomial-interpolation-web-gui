@@ -4,6 +4,7 @@
   "private": true,
   "description": "Polynomial Interpolation Web GUI with GeoGebra",
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "cypress": "^3.2.0",
     "eslint": "^5.16.0",
     "eslint-plugin-cypress": "^2.2.1",
@@ -16,7 +17,7 @@
     "dev": "npm start -- -o",
     "test": "npm start & cypress run",
     "pretest": "npm run lint && npm run types",
-    "lint": "eslint cypress/**/*.js",
+    "lint": "eslint *.js cypress/**/*.js",
     "e2e": "cypress run",
     "test:ci": "run-p --race start:ci e2e",
     "cy:verify": "cypress verify",
