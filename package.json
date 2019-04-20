@@ -4,10 +4,26 @@
   "private": true,
   "description": "Polynomial Interpolation Web GUI with GeoGebra",
   "devDependencies": {
-    "cypress": "^3.2.0"
+    "cypress": "^3.2.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-cypress": "^2.2.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run lint && npm run types && npm run stop-only",
+    "start": "http-server app -c-1",
+    "start:ci": "http-server app -c-1 --silent",
+    "dev": "npm start -- -o",
+    "test": "npm start & cypress run",
+    "pretest": "npm run lint && npm run types",
+    "lint": "eslint cypress/**/*.js",
+    "e2e": "cypress run",
+    "test:ci": "run-p --race start:ci e2e",
+    "cy:verify": "cypress verify",
+    "cy:version": "cypress version",
+    "cy:run": "cypress run",
+    "cy:open": "cypress open",
+    "local:open": "start-test 8080 cy:open",
+    "local:run": "start-test 8080 cy:run"
   },
   "repository": {
     "type": "git",
