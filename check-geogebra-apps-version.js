@@ -1,5 +1,5 @@
 /*eslint-env node*/
-/* eslint no-console: 0 */
+/*eslint no-console: 0*/
 
 /**
  * This script checks whether the used GeoGebra Apps version

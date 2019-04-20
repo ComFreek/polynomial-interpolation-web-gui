@@ -12,4 +12,4 @@
 
 - We use [GeoGebra Apps Embedding](https://wiki.geogebra.org/en/Reference:GeoGebra_Apps_Embedding) and its corresponding [GeoGebra Apps API](https://wiki.geogebra.org/en/Reference:GeoGebra_Apps_API).
 - `npm run lint`: Lint using [ESLint](https://eslint.org/)
-- `npm run cy:run -- --browser chrome`: Run integration tests using [Cypress](https://www.cypress.io/) for integration tests. (Chrome is required due to [issue #2](https://github.com/ComFreek/polynomial-interpolation-web-gui/issues/2))
+- `npm test`: Run integration tests using [Cypress](https://www.cypress.io/). (As set by `package.json`, Chrome is hardcoded as the browser due to [issue #2](https://github.com/ComFreek/polynomial-interpolation-web-gui/issues/2).)
