@@ -22,7 +22,7 @@ addons:
   chrome: stable
 
 script:
-  - ./check-geogebra-apps-version.js || travis_terminate 1
+  - node ./check-geogebra-apps-version.js || travis_terminate 1
   - npm run lint || travis_terminate 1
   - npm start -- --silent || travis_terminate 1 &
   # We have to use Chrome due to
@@ -31,3 +31,12 @@ script:
   # after all tests finish running we need to kill all background jobs (like "npm start &")
   - kill $(jobs -p) || true
 
+deploy:
+  provider: pages
+  local-dir: src
+  skip-cleanup: true
+  github-token: $GITHUB_PAGES_DEPLOYMENT_TOKEN
+  keep-history: true
+  on:
+    branch: master
+  target-branch: gh-pages
