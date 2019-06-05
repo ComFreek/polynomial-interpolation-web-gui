@@ -7,7 +7,7 @@
   * and will fail if there are updates available, see
   * ../../check-geogebra-apps-version.js.
   */
-const GEOGEBRA_APPS_VERSION_TO_USE = '5.0.539.0';
+const GEOGEBRA_APPS_VERSION_TO_USE = '5.0.541.0';
 if (typeof module !== 'undefined') {
 	module.exports = GEOGEBRA_APPS_VERSION_TO_USE;
 }
