@@ -20,6 +20,11 @@ cache:
 
 addons:
   chrome: stable
+  # Cypress (the test runner we're using) needs libgconf-2.so.4
+  # Error description & the solution can be found at ihttps://github.com/cypress-io/cypress/issues/4069#issuecomment-488315675
+  apt:
+    packages:
+    - libgconf-2-4
 
 script:
   - node ./check-geogebra-apps-version.js || travis_terminate 1
