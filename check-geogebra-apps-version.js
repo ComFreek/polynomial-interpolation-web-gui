@@ -52,38 +52,40 @@ async function getLatestGeoGebraAppsVersion() {
 /**
   * Convert a version object as returned from `extractVersionFromURI` to a string.
   * @param version Same format as returned from `extractVersionFromURI`
-  * @param considerSubPatch Boolean indicating whether the subpatch (fourth) version level should be considered or not.
-  *        If false, it's overwritten with a 0.
+  * @param considerPatch Boolean indicating whether the patch and even lower version levels (i.e. third and lower) should be considered or not.
   * @return A string, e.g. '1.0.2.3' for input {major: 1, minor: 0, patch: 2, subpatch: 3}.
-  *                   e.g. '1.0.2.0' for input {major: 1, minor: 0, patch: 2, subpatch: 3} and considerSubPatch=false.
+  *                   e.g. '1.42' for input {major: 1, minor: 42, patch: 2, subpatch: 3} and considerPatch=false.
   */
-function versionToStr(version, considerSubPatch = true) {
-	return `${version.major}.${version.minor}.${version.patch}.${considerSubPatch ? version.subpatch : 0}`;
+function versionToStr(version, considerPatchAndBelow = true) {
+	return `${version.major}.${version.minor}` + (considerPatchAndBelow ? `.${version.patch}.${version.subpatch}` : ``);
 }
 
 /**
-  * Compare two versions wrt. condition ignoring subpatch versions.
+  * Compare two versions wrt. condition ignoring patch and even lower version levels.
   * @param version1 Same format as returned from `extractVersionFromURI`
   * @param version2 Same format as returned from `extractVersionFromURI`
   * @param condition One of '<', '<=', '=', '>=' or '>'.
   *
   * @return True if the versions fulfill the stated condition.
   */
-function compareVersionsModuloSubpatch(version1, version2, condition) {
+function compareVersionsModuloPatch(version1, version2, condition) {
 	const [version1Str, version2Str] = [
 		versionToStr(version1, false),
 		versionToStr(version2, false)
 	];
 
-	return compareVersions(version1Str, version2Str, condition);
+	const comparisonResult = compareVersions.compare(version1Str, version2Str, condition);
+	console.log(`Compared ${version1Str} to ${version2Str} wrt. ${condition}: ${comparisonResult}`);
+	
+	return comparisonResult;
 }
 
 getLatestGeoGebraAppsVersion().then(latestGeoGebraAppsVersion => {
 	console.log(`Used GeoGebra version:                                ${versionToStr(usedGeoGebraAppsVersion)}`);
 	console.log(`Latest GeoGebra version according to GeoGebra server: ${versionToStr(latestGeoGebraAppsVersion)}`);
 	console.log(``);
-	if (compareVersionsModuloSubpatch(usedGeoGebraAppsVersion, latestGeoGebraAppsVersion, '<')) {
-		console.log('Ignoring the subpatch level, you are using the latest GeoGebra Apps version. Everything is fine!');
+	if (compareVersionsModuloPatch(usedGeoGebraAppsVersion, latestGeoGebraAppsVersion, '=')) {
+		console.log('Ignoring the patch and lower levels, you are using the latest GeoGebra Apps version. Everything is fine!');
 	}
 	else {
 		console.error(`Outdated GeoGebra Apps version, please upgrade. Failing Travis build!`);

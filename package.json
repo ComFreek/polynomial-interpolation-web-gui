@@ -3,7 +3,14 @@
 	"version": "0.0.1",
 	"private": true,
 	"description": "Polynomial Interpolation Web GUI with GeoGebra",
-	"keywords": ["web", "app", "gui", "interpolation", "polynomial", "geogebra"],
+	"keywords": [
+		"web",
+		"app",
+		"gui",
+		"interpolation",
+		"polynomial",
+		"geogebra"
+	],
 	"dependencies": {},
 	"devDependencies": {
 		"babel-eslint": "^10.0.1",
@@ -33,10 +40,12 @@
 		"name": "ComFreek",
 		"url": "https://github.com/ComFreek"
 	},
-	"contributors": [{
-		"name": "ComFreek",
-		"url": "https://github.com/ComFreek"
-	}],
+	"contributors": [
+		{
+			"name": "ComFreek",
+			"url": "https://github.com/ComFreek"
+		}
+	],
 	"license": "ISC",
 	"bugs": {
 		"url": "https://github.com/ComFreek/polynomial-interpolation-web-gui/issues"
