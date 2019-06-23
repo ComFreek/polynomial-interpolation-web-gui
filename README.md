@@ -10,7 +10,7 @@
 
 ## Dev Notes
 
-- We use [GeoGebra Apps Embedding](https://wiki.geogebra.org/en/Reference:GeoGebra_Apps_Embedding) and its corresponding [GeoGebra Apps API](https://wiki.geogebra.org/en/Reference:GeoGebra_Apps_API).
-- `npm run lint`: Lint using [ESLint](https://eslint.org/)
-- `npm test`: Run integration tests using [Cypress](https://www.cypress.io/). (As set by `package.json`, Chrome is hardcoded as the browser due to [issue #2](https://github.com/ComFreek/polynomial-interpolation-web-gui/issues/2).)
-- `node check-geogebra-apps-version.js`: Check whether we use the latest GeoGebra apps version and return a non-zero exit code if not. The script is used to fail the Travis build, which is set up to run every 2 weeks -- apart from regular commits. On failure, the repository's owner (that's me!) gets an e-mail. Thus, we more or less fake Greenkeeper behavior for GeoGebra Apps, for which no officially maintained NPM package exists.
+-  We use [GeoGebra Apps Embedding](https://wiki.geogebra.org/en/Reference:GeoGebra_Apps_Embedding) and its corresponding [GeoGebra Apps API](https://wiki.geogebra.org/en/Reference:GeoGebra_Apps_API).
+-  `npm run lint`: Lint using [ESLint](https://eslint.org/)
+-  `npm test`: Run integration tests using [Cypress](https://www.cypress.io/). (As set by `package.json`, Chrome is hardcoded as the browser due to [issue #2](https://github.com/ComFreek/polynomial-interpolation-web-gui/issues/2).)
+-  `node check-geogebra-apps-version.js`: Check whether we use the latest GeoGebra apps version and return a non-zero exit code if not. The script is used to fail the Travis build, which is set up to run every 2 weeks -- apart from regular commits. On failure, the repository's owner (that's me!) gets an e-mail. Thus, we more or less fake Greenkeeper behavior for GeoGebra Apps, for which no officially maintained NPM package exists.
