@@ -12,8 +12,8 @@ const GEOGEBRA_APPS_VERSION_TO_USE = {
 	minor: 0,
 	patch: 545,
 	subpatch: 0,
-	toString: () => {
-		`${this.major}.${this.minor}.${this.patch}.${this.subpatch}`
+	toString: function () {
+		return `${this.major}.${this.minor}.${this.patch}.${this.subpatch}`;
 	}
 };
 
