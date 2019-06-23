@@ -7,7 +7,16 @@
   * and will fail if there are updates available, see
   * ../../check-geogebra-apps-version.js.
   */
-const GEOGEBRA_APPS_VERSION_TO_USE = '5.0.545.0';
+const GEOGEBRA_APPS_VERSION_TO_USE = {
+	major: 5,
+	minor: 0,
+	patch: 545,
+	subpatch: 0,
+	toString: () => {
+		`${this.major}.${this.minor}.${this.patch}.${this.subpatch}`
+	}
+};
+
 if (typeof module !== 'undefined') {
 	module.exports = GEOGEBRA_APPS_VERSION_TO_USE;
 }
