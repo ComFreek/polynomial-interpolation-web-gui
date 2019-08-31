@@ -29,7 +29,7 @@ addons:
 script:
   - node ./check-geogebra-apps-version.js || travis_terminate 1
   - npm run lint || travis_terminate 1
-  - npm test
+  - travis_retry npm test
   - kill $(jobs -p) || true
 
 deploy:
