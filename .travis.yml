@@ -29,6 +29,14 @@ addons:
 script:
   - node ./check-geogebra-apps-version.js || travis_terminate 1
   - npm run lint || travis_terminate 1
+
+  # The Cypress tests randomly fail with
+  #   "CypressError: Timed out retrying: cy.trigger() failed because this element: <canvas ...>
+  #    is being covered by another element: <div ...>"
+  #
+  # e.g. see this log: https://travis-ci.com/ComFreek/polynomial-interpolation-web-gui/builds/124511686
+  #
+  # Hence retry multiple times on failure (3 per default)
   - travis_retry npm test
   - kill $(jobs -p) || true
 
