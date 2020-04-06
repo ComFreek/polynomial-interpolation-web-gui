@@ -23,7 +23,7 @@
 		"eslint-plugin-cypress": "2.10.1",
 		"http-server": "0.12.0",
 		"request": "2.88.0",
-		"request-promise-native": "1.0.7"
+		"request-promise-native": "1.0.8"
 	},
 	"scripts": {
 		"start": "http-server src -c-1",
