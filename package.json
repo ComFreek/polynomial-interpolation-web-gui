@@ -22,7 +22,7 @@
 		"eslint": "6.3.0",
 		"eslint-plugin-cypress": "2.10.1",
 		"http-server": "0.12.0",
-		"request": "2.88.0",
+		"request": "2.88.2",
 		"request-promise-native": "1.0.7"
 	},
 	"scripts": {
