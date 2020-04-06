@@ -11,6 +11,9 @@
 		"polynomial",
 		"geogebra"
 	],
+	"renovate": {
+		"extends": ["config:base"]
+	},
 	"dependencies": {},
 	"devDependencies": {
 		"babel-eslint": "^10.0.3",
