@@ -21,7 +21,7 @@
 		"cypress": "4.0.0",
 		"eslint": "6.3.0",
 		"eslint-plugin-cypress": "2.10.1",
-		"http-server": "0.12.0",
+		"http-server": "0.12.3",
 		"request": "2.88.0",
 		"request-promise-native": "1.0.7"
 	},
