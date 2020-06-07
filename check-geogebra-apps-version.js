@@ -11,15 +11,16 @@
  */
 
 const usedGeoGebraAppsVersion = require('./src/js/geogebra-apps-version');
-const request = require('request-promise-native');
+const https = require('https');
 const compareVersions = require('compare-versions');
 
 /**
-  * Extract the GeoGebra Apps version from its download URI.
-  *
-  * Sample input: 'https://download.geogebra.org/installers/5.0/geogebra-math-apps-bundle-5-0-534-0.zip'
-  * Sample output: {major: 5, minor: 0, patch: 534, subpatch: 0}
-  */
+	* Extract the GeoGebra Apps version from its download URI or parts thereof.
+	*
+	* Sample input: 'https://download.geogebra.org/installers/5.0/geogebra-math-apps-bundle-5-0-534-0.zip'
+	* Sample input: 'geogebra-math-apps-bundle-5-0-534-0.zip'
+	* Sample output in both cases: {major: 5, minor: 0, patch: 534, subpatch: 0}
+	*/
 function extractVersionFromURI(uri) {
 	const regex = /(?<major>\d+)-(?<minor>\d+)-(?<patch>\d+)-(?<subpatch>\d+)\.zip$/;
 	const parts = uri.match(regex).groups;
@@ -42,32 +43,48 @@ function extractVersionFromURI(uri) {
  * Inquire the latest GeoGebra Apps version and return it as a string.
  */
 async function getLatestGeoGebraAppsVersion() {
-	const LATEST_REDIRECTING_GEOGEBRA_APPS_URI = 'https://download.geogebra.org/package/geogebra-math-apps-bundle';
-	return request.head({
-		uri: LATEST_REDIRECTING_GEOGEBRA_APPS_URI,
-		resolveWithFullResponse: true
-	}).then(response => response.request.uri.href).then(extractVersionFromURI);
+	// Send a request to 'https://download.geogebra.org/package/geogebra-math-apps-bundle'
+	// that will (hopefully) be redirected by the server to a URI containing the
+	// current version.
+	//
+	// e.g. at time of writing it redirects to
+	// https://download.geogebra.org/installers/5.0/geogebra-math-apps-bundle-5-0-587-0.zip
+	return new Promise((resolve, reject) => {
+		https.get({
+			method: 'HEAD',
+			hostname: 'download.geogebra.org',
+			path: '/package/geogebra-math-apps-bundle'
+		}, response => {
+			response.resume(); // discard any further response data
+			if (response.headers.location) {
+				resolve(extractVersionFromURI(response.headers.location));
+			} else {
+				reject('URI that was assumed to redirect to a URI containing the current version did in fact not redirect.');
+			}
+			
+		}).on('error', reject);
+	});
 }
 
 /**
-  * Convert a version object as returned from `extractVersionFromURI` to a string.
-  * @param version Same format as returned from `extractVersionFromURI`
-  * @param considerPatch Boolean indicating whether the patch and even lower version levels (i.e. third and lower) should be considered or not.
-  * @return A string, e.g. '1.0.2.3' for input {major: 1, minor: 0, patch: 2, subpatch: 3}.
-  *                   e.g. '1.42' for input {major: 1, minor: 42, patch: 2, subpatch: 3} and considerPatch=false.
-  */
+	* Convert a version object as returned from `extractVersionFromURI` to a string.
+	* @param version Same format as returned from `extractVersionFromURI`
+	* @param considerPatch Boolean indicating whether the patch and even lower version levels (i.e. third and lower) should be considered or not.
+	* @return A string, e.g. '1.0.2.3' for input {major: 1, minor: 0, patch: 2, subpatch: 3}.
+	*									 e.g. '1.42' for input {major: 1, minor: 42, patch: 2, subpatch: 3} and considerPatch=false.
+	*/
 function versionToStr(version, considerPatchAndBelow = true) {
 	return `${version.major}.${version.minor}` + (considerPatchAndBelow ? `.${version.patch}.${version.subpatch}` : ``);
 }
 
 /**
-  * Compare two versions wrt. condition ignoring patch and even lower version levels.
-  * @param version1 Same format as returned from `extractVersionFromURI`
-  * @param version2 Same format as returned from `extractVersionFromURI`
-  * @param condition One of '<', '<=', '=', '>=' or '>'.
-  *
-  * @return True if the versions fulfill the stated condition.
-  */
+	* Compare two versions wrt. condition ignoring patch and even lower version levels.
+	* @param version1 Same format as returned from `extractVersionFromURI`
+	* @param version2 Same format as returned from `extractVersionFromURI`
+	* @param condition One of '<', '<=', '=', '>=' or '>'.
+	*
+	* @return True if the versions fulfill the stated condition.
+	*/
 function compareVersionsModuloPatch(version1, version2, condition) {
 	const [version1Str, version2Str] = [
 		versionToStr(version1, false),

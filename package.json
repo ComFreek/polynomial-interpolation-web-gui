@@ -12,18 +12,18 @@
 		"geogebra"
 	],
 	"renovate": {
-		"extends": ["config:base"]
+		"extends": [
+			"config:base"
+		]
 	},
 	"dependencies": {},
 	"devDependencies": {
 		"babel-eslint": "10.1.0",
 		"compare-versions": "3.6.0",
-		"cypress": "4.0.0",
-		"eslint": "6.3.0",
-		"eslint-plugin-cypress": "2.10.1",
-		"http-server": "0.12.0",
-		"request": "2.88.0",
-		"request-promise-native": "1.0.7"
+		"cypress": "4.7.0",
+		"eslint": "7.2.0",
+		"eslint-plugin-cypress": "2.11.1",
+		"http-server": "0.12.3"
 	},
 	"scripts": {
 		"start": "http-server src -c-1",
