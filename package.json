@@ -22,7 +22,7 @@
 		"compare-versions": "3.6.0",
 		"cypress": "5.2.0",
 		"eslint": "7.10.0",
-		"eslint-plugin-cypress": "2.11.1",
+		"eslint-plugin-cypress": "2.11.2",
 		"http-server": "0.12.3"
 	},
 	"scripts": {
