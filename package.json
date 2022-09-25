@@ -20,7 +20,7 @@
 	"devDependencies": {
 		"babel-eslint": "10.1.0",
 		"compare-versions": "3.6.0",
-		"cypress": "7.0.0",
+		"cypress": "10.8.0",
 		"eslint": "7.23.0",
 		"eslint-plugin-cypress": "2.11.2",
 		"http-server": "0.12.3"
